@@ -1,8 +1,9 @@
-import express from 'express'
-import http from 'http'
-import 'dotenv/config'
-import routes from './routes'
-import connection from './database/connection'
+const express = require('express')
+const http = require('http')
+require('dotenv/config')
+const routes = require('./routes')
+const connection = require('./database/connection')
+
 const app = express()
 
 app.use(express.json())
@@ -15,6 +16,4 @@ app.use(routes)
 
 
 
-export {
-    server
-}
+module.exports = { server, app }

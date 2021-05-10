@@ -8,13 +8,13 @@ module.exports = {
   // automock: false,
 
   // Stop running tests after `n` failures
-   bail: true,
+ //  bail: true,
 
   // The directory where Jest should store its cached dependency information
   // cacheDirectory: "/private/var/folders/hd/pv8hrhkj28g9v4t7vv8mp2rh0000gn/T/jest_dx",
 
   // Automatically clear mock calls and instances between every test
-  clearMocks: true,
+ // clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
  collectCoverage: true,

@@ -1,4 +1,4 @@
-import * as usersService from '../services/UsersService'
+const usersService = require('../services/UsersService')
 
 const create = (request, response) => {
     const {name, email, password_hash} = request.body
@@ -8,6 +8,4 @@ const create = (request, response) => {
     return response.status(200).json(user)
 }
 
-export {
-    create
-}
+module.exports = { create }

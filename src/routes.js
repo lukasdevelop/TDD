@@ -1,8 +1,10 @@
-import { Router } from 'express'
-import * as usersController from './controllers/UsersController'
+const { Router } = require('express')
+const usersController = require('./controllers/UsersController')
+const sessionController = require('./controllers/SessionController')
 
 const routes = Router()
 
 routes.post('/users', usersController.create)
+routes.post('/session', sessionController.store)
 
-export default routes
+module.exports = routes
