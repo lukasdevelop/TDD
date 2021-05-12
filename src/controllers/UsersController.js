@@ -5,7 +5,7 @@ const create = (request, response) => {
 
     const user = usersService.create({name, email, password_hash})
 
-    return response.status(200).json(user)
+    return response.status(user.statusCode).json(user.msg)
 }
 
 module.exports = { create }

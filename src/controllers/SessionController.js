@@ -1,9 +1,17 @@
+const sessionService = require('../services/SessionService')
+const store = async (request, response) => {
 
-const store = (request, response) => {
+    const user = await sessionService.store(request.body)
 
-    const { email, password } = request.body
+    if(user.statusCode === 401){
+        return response.status(401).json(user.msg)
+    }
 
-    return response.status(200).json({msg: email})
+    if(user.statusCode === 500){
+        return response.status(500).json(user.msg)
+    }
+
+    return response.status(user.statusCode).json(user.msg)
 }
 
 module.exports =  { store }
