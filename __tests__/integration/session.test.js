@@ -17,9 +17,9 @@ describe('Authentication', () => {
             password_hash: "123456"
         }
 
-        const userCreate = await connection('users').insert(data).returning(['email', 'password_hash'])
+        const [userCreate] = await connection('users').insert(data).returning(['email', 'password_hash'])
 
-        const user = await sessionService.store(userCreate[0])
+        const user = await sessionService.store(userCreate)
 
         expect(user.statusCode).toBe(200)
     })
@@ -37,7 +37,7 @@ describe('Authentication', () => {
         expect(user.statusCode).toBe(401)
     })
 
-    it("not should return JWT token when authenticated", async () => {
+    it("it should return a token", async () => {
 
         const data = {
             name: "Lucas",
@@ -46,10 +46,7 @@ describe('Authentication', () => {
         }
         const user = await sessionService.store(data)
 
-        console.log(user)
-        //const user = await sessionService.store(data)
-
-        //expect(user.statusCode).toBe(401)
+        expect(user).toHaveProperty("token")
     })
 
 

@@ -1,10 +1,7 @@
 const connection = require("../database/connection")
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 
-const generateToken = (params = {}) => {
-    return jwt.sign(params, process.env.APP_SECRET)
-}
+
 
 const create = async (data) => {
 
