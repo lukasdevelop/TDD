@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for TDD/src/services/SessionService.js</title>
+    <title>Code coverage report for TDD/src/middleware/auth.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">TDD/src/services</a> SessionService.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">TDD/src/middleware</a> auth.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.33% </span>
+                <span class="strong">93.94% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>28/30</span>
+                <span class='fraction'>31/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/4</span>
+                <span class='fraction'>5/6</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.33% </span>
+                <span class="strong">93.94% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>28/30</span>
+                <span class='fraction'>31/33</span>
             </div>
         
             
@@ -86,22 +86,34 @@
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -109,42 +121,39 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const connection = require('../../src/database/connection')
-const helpers = require('../helpers')
+<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">const jwt = require('jsonwebtoken')
+const { promisify } = require('util')
 &nbsp;
-const store = async (data) =&gt; {
+module.exports = async (request, response, next) =&gt; {
+    const authHeader = request.headers.authorization
 &nbsp;
-    const {email, password_hash} = data
+    if(!authHeader) {
+        return response.status(401).json({ msg: 'Token not provided'})
+    }
 &nbsp;
-    try{
-        const [user] = await connection('users')
-        .select('*')
-        .where('email', email)
-        .andWhere('password_hash', password_hash)
+    const [, token] = authHeader.split(' ')
 &nbsp;
-        if(user === undefined){
-            return {statusCode: 401, msg: 'User or password incorrect.'}
-        }
+    try {
+        //const decoded = await promisify(jwt.verify)(token, process.env.APP_SECRET)
+        await jwt.verify(token, process.env.APP_SECRET, function(err, decoded) {
+            console.log(decoded)
+                request.userId = decoded
 &nbsp;
-        return {statusCode: 200, msg: user, token: helpers.generateToken(user.id)}
+                if(err)
+                return response.status(401).json({ msg: 'Token invalid'})
 &nbsp;
-    }<span class="branch-0 cbranch-no" title="branch not covered" >catch(err){</span>
-<span class="cstat-no" title="statement not covered" >        return {statusCode: 500, msg: err}</span>
+                return next()
+        })
+        
+        //request.userId = decoded
+&nbsp;
+        //return next()
+&nbsp;
+    } <span class="branch-0 cbranch-no" title="branch not covered" >catch(err){</span>
+<span class="cstat-no" title="statement not covered" >        return response.status(401).json({ msg: 'Token invalid'})</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 &nbsp;
-&nbsp;
-}
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
-module.exports = { store }</pre></td></tr></table></pre>
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

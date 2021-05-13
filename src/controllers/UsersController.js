@@ -1,9 +1,8 @@
 const usersService = require('../services/UsersService')
 
-const create = (request, response) => {
-    const {name, email, password_hash} = request.body
+const create = async (request, response) => {
 
-    const user = usersService.create({name, email, password_hash})
+    const user = await usersService.create(request.body)
 
     return response.status(user.statusCode).json(user.msg)
 }

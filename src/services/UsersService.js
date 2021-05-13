@@ -11,11 +11,11 @@ const create = async (data) => {
 
     try {
 
-        const user = await connection('users').insert({
+        const [user] = await connection('users').insert({
             name,
             email,
-            hash
-        })
+            password_hash: hash
+        }).returning(['name', 'email'])
 
         return {
             statusCode: 200, msg: user
